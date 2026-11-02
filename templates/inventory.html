@@ -1,0 +1,153 @@
+
+{% extends "base.html" %}
+
+{% block title %}Inventory | BizVision{% endblock %}
+
+{% block styles %}
+<style>
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header p {
+        color: #64748b;
+        margin-top: 8px;
+    }
+
+    .inventory-table-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #DDE9E7;
+        box-shadow: 0 3px 15px rgba(38, 55, 70, 0.05);
+    }
+
+    .section-heading {
+        color: #263746;
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .inventory-table-card table {
+        width: 100%;
+        min-width: 850px;
+        border-collapse: collapse;
+    }
+
+    .inventory-table-card th,
+    .inventory-table-card td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #E2E8F0;
+        font-size: 14px;
+    }
+
+    .inventory-table-card th {
+        background: #F0FDFA;
+        color: #263746;
+        font-weight: 700;
+    }
+
+    .inventory-table-card tr:hover td {
+        background: #F8FAFC;
+    }
+
+    .low-stock {
+        display: inline-block;
+        background: #FEE2E2;
+        color: #B91C1C;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .in-stock {
+        display: inline-block;
+        background: #DCFCE7;
+        color: #15803D;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .empty-message {
+        text-align: center;
+        color: #64748b;
+        padding: 25px;
+    }
+
+    @media(max-width: 650px) {
+        .inventory-table-card {
+            padding: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Inventory Management</h1>
+    <p>Monitor your products and current stock levels.</p>
+</div>
+
+<div class="inventory-table-card">
+
+    <h2 class="section-heading">All Products Stock</h2>
+
+    <div class="table-wrapper">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Purchase Price</th>
+                    <th>Selling Price</th>
+                    <th>Available Stock</th>
+                    <th>Stock Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.product_id }}</td>
+                    <td>{{ product.product_name }}</td>
+                    <td>{{ product.category or 'N/A' }}</td>
+                    <td>₹{{ "%.2f"|format(product.purchase_price) }}</td>
+                    <td>₹{{ "%.2f"|format(product.selling_price) }}</td>
+                    <td>{{ product.stock_quantity or 0 }}</td>
+                    <td>
+                        {% if (product.stock_quantity or 0) <= 5 %}
+                        <span class="low-stock">Low Stock</span>
+                        {% else %}
+                        <span class="in-stock">In Stock</span>
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="7" class="empty-message">
+                        No products found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

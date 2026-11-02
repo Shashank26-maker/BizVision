@@ -1,0 +1,247 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .edit-sale-container {
+        max-width: 750px;
+        margin: 30px auto;
+        padding: 28px;
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    .edit-sale-container h2 {
+        color: #1e3a8a;
+        margin-bottom: 22px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        font-size: 15px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .save-btn, .cancel-btn {
+        padding: 11px 20px;
+        border: none;
+        border-radius: 7px;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .save-btn {
+        background: #2563eb;
+        color: white;
+    }
+
+    .cancel-btn {
+        background: #e5e7eb;
+        color: #111827;
+    }
+
+    .help-text {
+        color: #6b7280;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="edit-sale-container">
+
+    <h2>Edit Sale #{{ sale.sale_id }}</h2>
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label for="company_id">Company</label>
+
+            <select name="company_id" id="company_id" required>
+                {% for company in companies %}
+                    <option value="{{ company.company_id }}"
+                        {% if company.company_id == sale.company_id %}selected{% endif %}>
+                        {{ company.company_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="product_id">Product</label>
+
+            <select name="product_id" id="product_id" required>
+                {% for product in products %}
+                    <option
+                        value="{{ product.product_id }}"
+                        data-company="{{ product.company_id }}"
+                        data-stock="{{ product.stock_quantity or 0 }}"
+                        data-price="{{ product.selling_price }}"
+                        {% if product.product_id == sale.product_id %}selected{% endif %}>
+                        {{ product.product_name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <div class="help-text" id="stock-info"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="quantity">Quantity</label>
+
+            <input
+                type="number"
+                name="quantity"
+                id="quantity"
+                min="1"
+                value="{{ sale.quantity }}"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="sale_date">Sale Date</label>
+
+            <input
+                type="date"
+                name="sale_date"
+                id="sale_date"
+                value="{{ sale.sale_date.strftime('%Y-%m-%d') if sale.sale_date else '' }}"
+                required>
+        </div>
+
+        <div class="form-group">
+            <label for="payment_status">Payment Status</label>
+
+            <select name="payment_status" id="payment_status" required>
+                <option value="Paid"
+                    {% if sale.payment_status == 'Paid' %}selected{% endif %}>
+                    Paid
+                </option>
+
+                <option value="Pending"
+                    {% if sale.payment_status == 'Pending' %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="Partial"
+                    {% if sale.payment_status == 'Partial' %}selected{% endif %}>
+                    Partial
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="customer_id">Customer ID (Optional)</label>
+
+            <input
+                type="number"
+                name="customer_id"
+                id="customer_id"
+                min="1"
+                value="{{ sale.customer_id or '' }}"
+                placeholder="Enter customer ID">
+        </div>
+
+        <div class="form-group">
+            <strong>Estimated Total: ₹<span id="total-amount">0.00</span></strong>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="save-btn">
+                Save Changes
+            </button>
+
+            <a href="{{ url_for('sales') }}" class="cancel-btn">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    const companySelect = document.getElementById("company_id");
+    const productSelect = document.getElementById("product_id");
+    const quantityInput = document.getElementById("quantity");
+
+    const stockInfo = document.getElementById("stock-info");
+    const totalAmount = document.getElementById("total-amount");
+
+    function updateProducts() {
+        const selectedCompany = companySelect.value;
+        let selectedProductAvailable = false;
+
+        Array.from(productSelect.options).forEach(option => {
+            const belongsToCompany =
+                option.dataset.company === selectedCompany;
+
+            option.hidden = !belongsToCompany;
+            option.disabled = !belongsToCompany;
+
+            if (belongsToCompany && option.selected) {
+                selectedProductAvailable = true;
+            }
+        });
+
+        if (!selectedProductAvailable) {
+            const firstAvailable = Array.from(productSelect.options).find(
+                option => option.dataset.company === selectedCompany
+            );
+
+            if (firstAvailable) {
+                firstAvailable.selected = true;
+            }
+        }
+
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const selectedOption =
+            productSelect.options[productSelect.selectedIndex];
+
+        if (!selectedOption || selectedOption.disabled) {
+            stockInfo.textContent = "No product available for this company.";
+            totalAmount.textContent = "0.00";
+            return;
+        }
+
+        const stock = Number(selectedOption.dataset.stock || 0);
+        const price = Number(selectedOption.dataset.price || 0);
+        const quantity = Number(quantityInput.value || 0);
+
+        stockInfo.textContent = "Currently available stock: " + stock;
+
+        totalAmount.textContent =
+            (price * quantity).toFixed(2);
+    }
+
+    companySelect.addEventListener("change", updateProducts);
+    productSelect.addEventListener("change", updateTotal);
+    quantityInput.addEventListener("input", updateTotal);
+
+    updateProducts();
+</script>
+
+{% endblock %}

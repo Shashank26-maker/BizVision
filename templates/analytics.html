@@ -1,0 +1,205 @@
+
+{% extends "base.html" %}
+
+{% block title %}Analytics | BizVision{% endblock %}
+
+{% block styles %}
+<style>
+    .analytics-container {
+        padding: 10px 0;
+    }
+
+    .analytics-heading {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+
+    .analytics-subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 28px;
+    }
+
+    .analytics-section {
+        background: var(--surface);
+        color: var(--text);
+        padding: 24px;
+        border-radius: 14px;
+        margin-bottom: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        overflow-x: auto;
+    }
+
+    .analytics-section h2 {
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--text);
+    }
+
+    .analytics-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 350px;
+    }
+
+    .analytics-table th,
+    .analytics-table td {
+        padding: 14px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--text);
+    }
+
+    .analytics-table th {
+        background: var(--surface-secondary);
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .analytics-table tr:hover td {
+        background: var(--surface-secondary);
+    }
+
+    .analytics-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .empty-message {
+        color: var(--text-secondary);
+        padding: 15px 0;
+        font-size: 14px;
+    }
+
+    @media(max-width: 600px) {
+        .analytics-heading {
+            font-size: 23px;
+        }
+
+        .analytics-section {
+            padding: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="analytics-container">
+
+    <div class="analytics-heading">Monthly & Yearly Analytics</div>
+
+    <p class="analytics-subtitle">
+        Track your business revenue and expenses over time.
+    </p>
+
+    <div class="analytics-section">
+        <h2>Monthly Revenue</h2>
+
+        {% if monthly_sales %}
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Revenue</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in monthly_sales %}
+                <tr>
+                    <td>{{ item.period }}</td>
+                    <td>₹{{ "%.2f"|format(item.revenue) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-message">No monthly sales data available.</p>
+        {% endif %}
+    </div>
+
+    <div class="analytics-section">
+        <h2>Yearly Revenue</h2>
+
+        {% if yearly_sales %}
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Revenue</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in yearly_sales %}
+                <tr>
+                    <td>{{ item.period }}</td>
+                    <td>₹{{ "%.2f"|format(item.revenue) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-message">No yearly sales data available.</p>
+        {% endif %}
+    </div>
+
+    <div class="analytics-section">
+        <h2>Monthly Expenses</h2>
+
+        {% if monthly_expenses %}
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Expenses</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in monthly_expenses %}
+                <tr>
+                    <td>{{ item.period }}</td>
+                    <td>₹{{ "%.2f"|format(item.expenses) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-message">No monthly expense data available.</p>
+        {% endif %}
+    </div>
+
+    <div class="analytics-section">
+        <h2>Yearly Expenses</h2>
+
+        {% if yearly_expenses %}
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Expenses</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in yearly_expenses %}
+                <tr>
+                    <td>{{ item.period }}</td>
+                    <td>₹{{ "%.2f"|format(item.expenses) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-message">No yearly expense data available.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

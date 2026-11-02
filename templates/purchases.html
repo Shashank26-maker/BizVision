@@ -1,0 +1,277 @@
+
+{% extends "base.html" %}
+
+{% block title %}Purchases | BizVision{% endblock %}
+
+{% block styles %}
+<style>
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        color: var(--text);
+    }
+
+    .page-header p {
+        color: var(--text-secondary);
+        margin-top: 8px;
+    }
+
+    .purchase-form-card,
+    .purchases-table-card {
+        background: var(--surface);
+        color: var(--text);
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+
+    .section-heading {
+        color: var(--text);
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .purchase-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text);
+        background: var(--input-background);
+        box-sizing: border-box;
+        outline: none;
+    }
+
+    .form-group input::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        border-color: #0D9488;
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.10);
+    }
+
+    .form-actions {
+        margin-top: 22px;
+    }
+
+    .submit-btn {
+        padding: 12px 24px;
+        background: #0D9488;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: #0F766E;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .purchases-table-card table {
+        width: 100%;
+        min-width: 750px;
+        border-collapse: collapse;
+    }
+
+    .purchases-table-card th,
+    .purchases-table-card td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--text);
+    }
+
+    .purchases-table-card th {
+        background: var(--surface-secondary);
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .purchases-table-card tr:hover td {
+        background: var(--surface-secondary);
+    }
+
+    .empty-message {
+        text-align: center;
+        color: var(--text-secondary) !important;
+        padding: 25px;
+    }
+
+    @media(max-width: 650px) {
+        .purchase-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .purchase-form-card,
+        .purchases-table-card {
+            padding: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Purchases Management</h1>
+    <p>Record product purchases and manage supplier transactions.</p>
+</div>
+
+<div class="purchase-form-card">
+
+    <h2 class="section-heading">Add New Purchase</h2>
+
+    <form method="POST" action="/purchases">
+
+        <div class="purchase-form-grid">
+
+            <div class="form-group">
+                <label>Select Company</label>
+                <select name="company_id" required>
+                    <option value="">Choose Company</option>
+                    {% for company in companies %}
+                    <option value="{{ company.company_id }}">
+                        {{ company.company_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Select Supplier</label>
+                <select name="supplier_id">
+                    <option value="">Choose Supplier (Optional)</option>
+                    {% for supplier in suppliers %}
+                    <option value="{{ supplier.supplier_id }}">
+                        {{ supplier.supplier_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Select Product</label>
+                <select name="product_id" required>
+                    <option value="">Choose Product</option>
+                    {% for product in products %}
+                    <option value="{{ product.product_id }}">
+                        {{ product.product_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Purchase Date</label>
+                <input type="date" name="purchase_date" required>
+            </div>
+
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" name="quantity"
+                       min="1" placeholder="Enter quantity" required>
+            </div>
+
+            <div class="form-group">
+                <label>Purchase Price (Per Unit ₹)</label>
+                <input type="number" name="purchase_price"
+                       min="0.01" step="0.01"
+                       placeholder="Enter purchase price" required>
+            </div>
+
+            <div class="form-group">
+                <label>Payment Status</label>
+                <select name="payment_status" required>
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Partial">Partial</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">
+                Add Purchase
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<div class="purchases-table-card">
+
+    <h2 class="section-heading">All Purchases</h2>
+
+    <div class="table-wrapper">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Purchase ID</th>
+                    <th>Company ID</th>
+                    <th>Supplier ID</th>
+                    <th>Purchase Date</th>
+                    <th>Total Amount</th>
+                    <th>Payment Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for purchase in purchases %}
+                <tr>
+                    <td>{{ purchase.purchase_id }}</td>
+                    <td>{{ purchase.company_id }}</td>
+                    <td>{{ purchase.supplier_id or "-" }}</td>
+                    <td>{{ purchase.purchase_date }}</td>
+                    <td>₹{{ purchase.total_amount }}</td>
+                    <td>{{ purchase.payment_status }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="empty-message">
+                        No purchases added yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

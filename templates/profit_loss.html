@@ -1,0 +1,122 @@
+
+{% extends "base.html" %}
+
+{% block title %}Profit & Loss | BizVision{% endblock %}
+
+{% block styles %}
+<style>
+    .profit-container {
+        padding: 10px 0;
+    }
+
+    .profit-heading {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+    }
+
+    .profit-subtitle {
+        color: var(--text-secondary);
+        margin-bottom: 28px;
+    }
+
+    .profit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .profit-card {
+        background: var(--surface);
+        color: var(--text);
+        padding: 25px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .profit-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 18px rgba(38, 55, 70, 0.12);
+    }
+
+    .profit-card h3 {
+        color: var(--text-secondary);
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .profit-card h2 {
+        font-size: 25px;
+        font-weight: 700;
+        color: var(--text);
+        overflow-wrap: anywhere;
+    }
+
+    .net-card {
+        background: #0D9488;
+        border: 1px solid #0D9488;
+    }
+
+    .net-card h3,
+    .net-card h2 {
+        color: #ffffff;
+    }
+
+    @media(max-width: 600px) {
+        .profit-heading {
+            font-size: 23px;
+        }
+
+        .profit-card {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="profit-container">
+
+    <div class="profit-heading">Profit & Loss Analysis</div>
+
+    <p class="profit-subtitle">
+        Understand your business revenue, costs and profitability.
+    </p>
+
+    <div class="profit-grid">
+
+        <div class="profit-card">
+            <h3>Total Revenue</h3>
+            <h2>₹{{ "%.2f"|format(total_revenue) }}</h2>
+        </div>
+
+        <div class="profit-card">
+            <h3>Cost of Goods Sold (COGS)</h3>
+            <h2>₹{{ "%.2f"|format(total_cogs) }}</h2>
+        </div>
+
+        <div class="profit-card">
+            <h3>Gross Profit</h3>
+            <h2>₹{{ "%.2f"|format(gross_profit) }}</h2>
+        </div>
+
+        <div class="profit-card">
+            <h3>Total Expenses</h3>
+            <h2>₹{{ "%.2f"|format(total_expenses) }}</h2>
+        </div>
+
+        <div class="profit-card net-card">
+            <h3>Net Profit</h3>
+            <h2>₹{{ "%.2f"|format(net_profit) }}</h2>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

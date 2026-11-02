@@ -1,0 +1,267 @@
+
+{% extends "base.html" %}
+
+{% block title %}Suppliers | BizVision{% endblock %}
+
+{% block styles %}
+<style>
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        color: var(--text);
+    }
+
+    .page-header p {
+        color: var(--text-secondary);
+        margin-top: 8px;
+    }
+
+    .supplier-form-card,
+    .suppliers-table-card {
+        background: var(--surface);
+        color: var(--text);
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+
+    .section-heading {
+        color: var(--text);
+        font-size: 19px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .supplier-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text);
+        background: var(--input-background);
+        box-sizing: border-box;
+        outline: none;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .form-group textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #0D9488;
+        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.10);
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+    }
+
+    .submit-btn {
+        padding: 12px 24px;
+        background: #0D9488;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: #0F766E;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .suppliers-table-card table {
+        width: 100%;
+        min-width: 750px;
+        border-collapse: collapse;
+    }
+
+    .suppliers-table-card th,
+    .suppliers-table-card td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--text);
+    }
+
+    .suppliers-table-card th {
+        background: var(--surface-secondary);
+        color: var(--text);
+        font-weight: 700;
+    }
+
+    .suppliers-table-card tr:hover td {
+        background: var(--surface-secondary);
+    }
+
+    .empty-message {
+        text-align: center;
+        color: var(--text-secondary) !important;
+        padding: 25px;
+    }
+
+    @media(max-width: 650px) {
+        .supplier-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+        .supplier-form-card,
+        .suppliers-table-card {
+            padding: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Suppliers Management</h1>
+    <p>Add and manage your business suppliers.</p>
+</div>
+
+<div class="supplier-form-card">
+
+    <h2 class="section-heading">Add New Supplier</h2>
+
+    <form method="POST" action="/suppliers">
+
+        <div class="supplier-form-grid">
+
+            <div class="form-group">
+                <label>Select Company</label>
+                <select name="company_id" required>
+                    <option value="">Choose Company</option>
+
+                    {% for company in companies %}
+                    <option value="{{ company.company_id }}">
+                        {{ company.company_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Supplier Name</label>
+                <input type="text" name="supplier_name"
+                       placeholder="Enter supplier name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email"
+                       placeholder="Enter email address">
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" name="phone"
+                       placeholder="Enter phone number">
+            </div>
+
+            <div class="form-group full-width">
+                <label>Address</label>
+                <textarea name="address"
+                          placeholder="Enter supplier address"></textarea>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">
+                Add Supplier
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<div class="suppliers-table-card">
+
+    <h2 class="section-heading">All Suppliers</h2>
+
+    <div class="table-wrapper">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Company ID</th>
+                    <th>Supplier Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for supplier in suppliers %}
+                <tr>
+                    <td>{{ supplier.supplier_id }}</td>
+                    <td>{{ supplier.company_id }}</td>
+                    <td>{{ supplier.supplier_name }}</td>
+                    <td>{{ supplier.email or "-" }}</td>
+                    <td>{{ supplier.phone or "-" }}</td>
+                    <td>{{ supplier.address or "-" }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="empty-message">
+                        No suppliers added yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

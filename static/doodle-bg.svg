@@ -1,0 +1,86 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900">
+  <defs>
+    <style>
+      .line { fill:none; stroke:#55B9A7; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+      .gold { fill:none; stroke:#E8BE62; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+      .mint { fill:#C9F0E5; stroke:#55B9A7; stroke-width:2.5; }
+      .yellow { fill:#FFF0BD; stroke:#E8BE62; stroke-width:2.5; }
+      .float1 { animation: float 7s ease-in-out infinite; }
+      .float2 { animation: float 9s ease-in-out infinite reverse; }
+      .float3 { animation: float 11s ease-in-out infinite; }
+      @keyframes float {
+        0%,100% { transform:translateY(0px) rotate(0deg); }
+        50% { transform:translateY(-13px) rotate(5deg); }
+      }
+    </style>
+  </defs>
+
+  <!-- Clouds -->
+  <g class="float1" opacity=".55">
+    <path class="line" d="M100 180 Q75 180 75 155 Q75 130 105 132 Q115 95 155 110 Q180 80 205 115 Q240 105 245 140 Q275 150 255 175 Z"/>
+  </g>
+  <g class="float2" opacity=".45">
+    <path class="line" d="M1120 180 Q1090 180 1090 155 Q1090 130 1120 132 Q1130 95 1170 110 Q1195 80 1220 115 Q1255 105 1260 140 Q1290 150 1270 175 Z"/>
+  </g>
+
+  <!-- Leaves -->
+  <g class="float2" opacity=".65">
+    <path class="mint" d="M300 300 Q260 245 220 275 Q235 325 300 300Z"/>
+    <path class="line" d="M220 275 Q260 285 300 300"/>
+    <path class="mint" d="M300 300 Q310 240 355 245 Q360 285 300 300Z"/>
+  </g>
+  <g class="float1" opacity=".55">
+    <path class="mint" d="M1190 600 Q1140 550 1105 590 Q1140 640 1190 600Z"/>
+    <path class="line" d="M1105 590 Q1150 595 1190 600"/>
+  </g>
+
+  <!-- Stars -->
+  <g class="float3" opacity=".65">
+    <path class="gold" d="M520 110 L530 135 L555 145 L530 155 L520 180 L510 155 L485 145 L510 135Z"/>
+    <path class="gold" d="M950 350 L958 370 L978 378 L958 386 L950 406 L942 386 L922 378 L942 370Z"/>
+    <path class="gold" d="M180 650 L188 670 L208 678 L188 686 L180 706 L172 686 L152 678 L172 670Z"/>
+  </g>
+
+  <!-- Paper plane -->
+  <g class="float1" opacity=".6">
+    <path class="line" d="M650 210 L770 165 L730 270 L710 230 Z"/>
+    <path class="line" d="M710 230 L770 165"/>
+    <path class="line" d="M710 230 L705 255"/>
+    <path class="gold" d="M780 155 Q820 125 850 150"/>
+  </g>
+
+  <!-- Lightbulb -->
+  <g class="float2" opacity=".55">
+    <path class="gold" d="M870 550 Q830 520 850 480 Q870 440 910 465 Q950 490 925 530 L910 550 Z"/>
+    <path class="line" d="M870 550 L910 550 M875 565 L905 565 M880 580 L900 580"/>
+    <path class="gold" d="M890 425 L890 405 M835 445 L820 430 M945 445 L960 430"/>
+  </g>
+
+  <!-- Laptop -->
+  <g class="float3" opacity=".55">
+    <rect x="390" y="600" width="125" height="85" rx="8" class="mint"/>
+    <path class="line" d="M375 690 L530 690 L545 705 L360 705 Z"/>
+    <path class="gold" d="M415 655 L440 635 L460 650 L490 620"/>
+    <path class="line" d="M480 620 L490 620 L490 630"/>
+  </g>
+
+  <!-- Checklist -->
+  <g class="float1" opacity=".5">
+    <rect x="1030" y="300" width="100" height="125" rx="10" class="yellow"/>
+    <path class="line" d="M1050 335 L1060 345 L1075 325 M1085 338 L1110 338"/>
+    <path class="line" d="M1050 375 L1060 385 L1075 365 M1085 378 L1110 378"/>
+    <path class="line" d="M1050 405 L1110 405"/>
+  </g>
+
+  <!-- Small doodle dots -->
+  <g opacity=".55">
+    <circle cx="150" cy="400" r="7" fill="#75CDB9"/>
+    <circle cx="570" cy="500" r="6" fill="#E8BE62"/>
+    <circle cx="800" cy="700" r="8" fill="#75CDB9"/>
+    <circle cx="1280" cy="760" r="6" fill="#E8BE62"/>
+    <circle cx="680" cy="390" r="5" fill="#75CDB9"/>
+    <path class="gold" d="M1200 400 q15 -20 30 0 t30 0"/>
+    <path class="line" d="M170 790 q15 -20 30 0 t30 0"/>
+  </g>
+</svg>

@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BizVision{% endblock %}</title>
+
+    <script>
+        (function () {
+            document.documentElement.setAttribute(
+                "data-theme",
+                localStorage.getItem("bizvision-theme") || "light"
+            );
+            document.documentElement.setAttribute(
+                "data-compact",
+                localStorage.getItem("bizvision-compact") || "off"
+            );
+        })();
+    </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        :root {
+            color-scheme: light;
+            --page-bg: #EDF5F3;
+            --content-bg: rgba(237,245,243,0.78);
+            --text-color: #263746;
+            --card-bg: #FFFFFF;
+            --border-color: #DDE9E7;
+            --input-bg: #FFFFFF;
+            --muted-color: #64748B;
+        }
+
+        html[data-theme="dark"] {
+            color-scheme: dark;
+            --page-bg: #111827;
+            --content-bg: rgba(17,24,39,0.94);
+            --text-color: #E5E7EB;
+            --card-bg: #1F2937;
+            --border-color: #374151;
+            --input-bg: #111827;
+            --muted-color: #A7B0BE;
+        }
+
+        body {
+            background: var(--page-bg) !important;
+            color: var(--text-color);
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        .doodle-background {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.20;
+            overflow: hidden;
+        }
+
+        .doodle-background img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        html[data-theme="dark"] .doodle-background {
+            opacity: 0.07;
+        }
+
+        .navbar {
+            position: relative;
+            z-index: 5;
+            background: #263746;
+            color: white;
+            padding: 16px 30px;
+            border-bottom: 3px solid #0D9488;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .brand-name {
+            font-size: 25px;
+            font-weight: 750;
+            letter-spacing: 0.4px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .welcome-user {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 14px;
+            background: #0D9488;
+            color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .user-icon {
+            font-size: 17px;
+        }
+
+        .user-role {
+            background: #FFFFFF;
+            color: #0D766E;
+            padding: 4px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settings-wrapper {
+            position: relative;
+        }
+
+        .settings-btn,
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            background: #FFFFFF;
+            color: #263746 !important;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .settings-btn:hover {
+            background: #DDF5F1;
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: #0F766E;
+            color: #FFFFFF !important;
+        }
+
+        .logout-btn:hover {
+            background: #115E59;
+            transform: translateY(-2px);
+        }
+
+        .settings-panel {
+            display: none;
+            position: absolute;
+            top: 48px;
+            right: 0;
+            width: 270px;
+            padding: 18px;
+            background: #FFFFFF;
+            color: #263746;
+            border: 1px solid #DDE9E7;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.20);
+            z-index: 20;
+        }
+
+        .settings-panel.show {
+            display: block;
+        }
+
+        .settings-panel h3 {
+            font-size: 17px;
+            margin-bottom: 14px;
+            color: #263746;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-switch {
+            position: relative;
+            width: 42px;
+            height: 23px;
+            flex-shrink: 0;
+        }
+
+        .setting-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: absolute;
+            inset: 0;
+            background: #CBD5E1;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .switch-slider::before {
+            content: "";
+            position: absolute;
+            width: 17px;
+            height: 17px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.25s;
+        }
+
+        .setting-switch input:checked + .switch-slider {
+            background: #0D9488;
+        }
+
+        .setting-switch input:checked + .switch-slider::before {
+            transform: translateX(19px);
+        }
+
+        html[data-theme="dark"] .settings-panel {
+            background: #1F2937;
+            color: #E5E7EB;
+            border-color: #374151;
+        }
+
+        html[data-theme="dark"] .settings-panel h3 {
+            color: #E5E7EB;
+        }
+
+        html[data-theme="dark"] .setting-row {
+            border-color: #374151;
+        }
+
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 65px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar {
+            width: 230px;
+            flex-shrink: 0;
+            background: #0D9488 !important;
+            padding: 25px 15px;
+            border-right: none;
+        }
+
+        /* Sidebar Menu Sections */
+        .sidebar-section {
+            background: rgba(255, 255, 255, 0.13);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 12px;
+            padding: 10px 8px 5px;
+            margin-bottom: 20px;
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-section:hover {
+            background: rgba(255, 255, 255, 0.17);
+        }
+
+        .sidebar h3 {
+            color: #FFFFFF !important;
+            font-size: 12px;
+            margin: 8px 10px 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #FFFFFF !important;
+            text-decoration: none;
+            padding: 13px 12px;
+            border-radius: 8px;
+            margin-bottom: 7px;
+            font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .sidebar a:hover {
+            background: #0F766E !important;
+            color: #FFFFFF !important;
+            padding-left: 17px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 35px;
+            min-width: 0;
+            position: relative;
+            background: var(--content-bg) !important;
+            color: var(--text-color);
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        .main-content > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        html[data-theme="dark"] .main-content h1,
+        html[data-theme="dark"] .main-content h2,
+        html[data-theme="dark"] .main-content h3,
+        html[data-theme="dark"] .main-content h4,
+        html[data-theme="dark"] .main-content p,
+        html[data-theme="dark"] .main-content label,
+        html[data-theme="dark"] .main-content span {
+            color: inherit;
+        }
+
+        html[data-theme="dark"] .main-content .card,
+        html[data-theme="dark"] .main-content .stat-card,
+        html[data-theme="dark"] .main-content .dashboard-card,
+        html[data-theme="dark"] .main-content .chart-card,
+        html[data-theme="dark"] .main-content .table-container,
+        html[data-theme="dark"] .main-content .form-container {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .main-content table {
+            color: var(--text-color);
+        }
+
+        html[data-theme="dark"] .main-content th,
+        html[data-theme="dark"] .main-content td {
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .main-content input,
+        html[data-theme="dark"] .main-content select,
+        html[data-theme="dark"] .main-content textarea {
+            background: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .main-content input::placeholder,
+        html[data-theme="dark"] .main-content textarea::placeholder {
+            color: var(--muted-color);
+        }
+
+        html[data-theme="dark"] .main-content a:not(.btn):not(.button) {
+            color: #5EEAD4;
+        }
+
+        html[data-theme="dark"] .main-content .muted,
+        html[data-theme="dark"] .main-content small {
+            color: var(--muted-color);
+        }
+
+        html[data-compact="on"] .main-content {
+            padding: 20px;
+        }
+
+        html[data-compact="on"] .main-content .card,
+        html[data-compact="on"] .main-content .stat-card,
+        html[data-compact="on"] .main-content .dashboard-card,
+        html[data-compact="on"] .main-content .chart-card,
+        html[data-compact="on"] .main-content .table-container {
+            padding: 12px !important;
+        }
+
+        html[data-compact="on"] .main-content th,
+        html[data-compact="on"] .main-content td {
+            padding: 8px !important;
+        }
+
+        @media(max-width: 650px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .navbar {
+                padding: 16px 20px;
+            }
+
+            .brand-name {
+                font-size: 21px;
+            }
+
+            .user-menu {
+                width: 100%;
+            }
+
+            .welcome-user {
+                flex-wrap: wrap;
+            }
+
+            .navbar-actions {
+                flex-wrap: wrap;
+            }
+
+            .settings-panel {
+                right: auto;
+                left: 0;
+            }
+        }
+    </style>
+
+    {% block styles %}{% endblock %}
+</head>
+
+<body class="page-{{ request.endpoint or 'index' }}">
+
+    <div class="doodle-background">
+        <img src="{{ url_for('static', filename='doodle-bg.svg') }}"
+             alt=""
+             aria-hidden="true">
+    </div>
+
+    <div class="navbar">
+
+        <span class="brand-name">BizVision</span>
+
+        <div class="navbar-actions">
+
+            <div class="settings-wrapper">
+
+                <button type="button"
+                        class="settings-btn"
+                        onclick="toggleSettings()">
+                    ⚙️ Settings
+                </button>
+
+                <div class="settings-panel" id="settingsPanel">
+
+                    <h3>⚙️ App Settings</h3>
+
+                    <div class="setting-row">
+                        <span>🌙 Dark Mode</span>
+                        <label class="setting-switch">
+                            <input type="checkbox"
+                                   id="darkModeSwitch"
+                                   onchange="changeDarkMode(this.checked)">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <span>📦 Compact Mode</span>
+                        <label class="setting-switch">
+                            <input type="checkbox"
+                                   id="compactModeSwitch"
+                                   onchange="changeCompactMode(this.checked)">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <span>🔔 Notification Sound</span>
+                        <label class="setting-switch">
+                            <input type="checkbox"
+                                   id="soundModeSwitch"
+                                   onchange="changeSoundMode(this.checked)">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+            {% if session.get('user_id') %}
+                <div class="user-menu">
+
+                    <div class="welcome-user">
+                        <span class="user-icon">👤</span>
+                        <span>Welcome, {{ session.get('full_name') }}</span>
+                        <span class="user-role">
+                            {{ session.get('role')|capitalize }}
+                        </span>
+                    </div>
+
+                    <a href="{{ url_for('logout') }}" class="logout-btn">
+                        ↪ Logout
+                    </a>
+
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-section">
+
+                <h3>Main Menu</h3>
+
+                <a href="/">Dashboard</a>
+                <a href="/sales">Sales</a>
+                <a href="/products">Products</a>
+                <a href="/customers">Customers</a>
+                <a href="/inventory">Inventory Management</a>
+
+            </div>
+
+            {% if session.get('role') == 'admin' %}
+
+                <div class="sidebar-section">
+
+                    <h3>Admin Menu</h3>
+
+                    <a href="/companies">Companies</a>
+                    <a href="/expenses">Expenses</a>
+                    <a href="/reports">Reports</a>
+                    <a href="{{ url_for('profit_loss') }}">Profit & Loss Analysis</a>
+                    <a href="{{ url_for('analytics') }}">Monthly & Yearly Analytics</a>
+                    <a href="/suppliers">Suppliers</a>
+                    <a href="/purchases">Purchases</a>
+
+                </div>
+
+            {% endif %}
+
+        </aside>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+    </div>
+
+    <script>
+        let bizVisionAudioContext = null;
+
+        function getBizVisionAudioContext() {
+            const AudioContextClass =
+                window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContextClass) {
+                return null;
+            }
+
+            if (!bizVisionAudioContext) {
+                bizVisionAudioContext = new AudioContextClass();
+            }
+
+            return bizVisionAudioContext;
+        }
+
+        async function playBizVisionNotification(force = false) {
+            if (!force && localStorage.getItem("bizvision-sound") !== "on") {
+                return;
+            }
+
+            try {
+                const audioContext = getBizVisionAudioContext();
+
+                if (!audioContext) {
+                    console.log("This browser does not support audio.");
+                    return;
+                }
+
+                if (audioContext.state === "suspended") {
+                    await audioContext.resume();
+                }
+
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                oscillator.type = "sine";
+                oscillator.frequency.setValueAtTime(
+                    750,
+                    audioContext.currentTime
+                );
+
+                gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(
+                    0.12,
+                    audioContext.currentTime + 0.02
+                );
+                gain.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    audioContext.currentTime + 0.25
+                );
+
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.27);
+
+            } catch (error) {
+                console.error("Notification sound error:", error);
+            }
+        }
+
+        function applyBizVisionTheme(theme) {
+            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("bizvision-theme", theme);
+
+            const switchElement = document.getElementById("darkModeSwitch");
+
+            if (switchElement) {
+                switchElement.checked = theme === "dark";
+            }
+        }
+
+        function changeDarkMode(enabled) {
+            applyBizVisionTheme(enabled ? "dark" : "light");
+        }
+
+        function changeCompactMode(enabled) {
+            const value = enabled ? "on" : "off";
+
+            document.documentElement.setAttribute("data-compact", value);
+            localStorage.setItem("bizvision-compact", value);
+        }
+
+        async function changeSoundMode(enabled) {
+            localStorage.setItem("bizvision-sound", enabled ? "on" : "off");
+
+            if (enabled) {
+                await playBizVisionNotification(true);
+            }
+        }
+
+        function toggleSettings() {
+            document.getElementById("settingsPanel").classList.toggle("show");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const theme = localStorage.getItem("bizvision-theme") || "light";
+            const compact = localStorage.getItem("bizvision-compact") || "off";
+            const sound = localStorage.getItem("bizvision-sound") || "off";
+
+            applyBizVisionTheme(theme);
+            changeCompactMode(compact === "on");
+
+            document.getElementById("soundModeSwitch").checked =
+                sound === "on";
+
+            document.getElementById("compactModeSwitch").checked =
+                compact === "on";
+        });
+
+        // Sound on form submission
+        document.addEventListener("submit", function () {
+            playBizVisionNotification();
+        }, true);
+    </script>
+
+</body>
+</html>

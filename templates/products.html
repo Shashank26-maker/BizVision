@@ -1,0 +1,127 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Products Management</h1>
+    <p>Manage your business products and stock.</p>
+</div>
+
+<!-- Add Product Form -->
+<div class="card product-form-card">
+
+    <div class="section-heading">
+        <h2>Add New Product</h2>
+        <p>Enter the details below to add a new product.</p>
+    </div>
+
+    <form method="POST" action="/products">
+
+        <div class="product-form-grid">
+
+            <div class="form-group">
+                <label>Select Company</label>
+                <select name="company_id" required>
+                    <option value="">Choose Company</option>
+
+                    {% for company in companies %}
+                    <option value="{{ company.company_id }}">
+                        {{ company.company_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" name="product_name"
+                       placeholder="Enter product name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Purchase Price (₹)</label>
+                <input type="number" name="purchase_price"
+                       placeholder="Enter purchase price"
+                       min="0.01" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Selling Price (₹)</label>
+                <input type="number" name="selling_price"
+                       placeholder="Enter selling price"
+                       min="0.01" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Stock Quantity</label>
+                <input type="number" name="stock_quantity"
+                       placeholder="Enter stock quantity"
+                       min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <input type="text" name="category"
+                       placeholder="Enter category">
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">+ Add Product</button>
+        </div>
+
+    </form>
+</div>
+
+
+<!-- Products Table -->
+<div class="card products-table-card">
+
+    <div class="section-heading">
+        <h2>All Products</h2>
+        <p>View your available products and stock details.</p>
+    </div>
+
+    {% if message %}
+        <p class="success-message">{{ message }}</p>
+    {% endif %}
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product Name</th>
+                    <th>Purchase Price</th>
+                    <th>Selling Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.product_id }}</td>
+                    <td>{{ product.product_name }}</td>
+                    <td>₹{{ product.purchase_price }}</td>
+                    <td>₹{{ product.selling_price }}</td>
+                    <td>{{ product.stock_quantity }}</td>
+                    <td>{{ product.category or '-' }}</td>
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="6">No products added yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}
+

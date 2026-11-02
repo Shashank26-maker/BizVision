@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | BizVision</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #F0FDFA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .register-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 38px;
+            border-radius: 16px;
+            border: 1px solid #DDE9E7;
+            box-shadow: 0 8px 30px rgba(38, 55, 70, 0.09);
+        }
+
+        .brand {
+            text-align: center;
+            color: #0D9488;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #263746;
+            font-size: 23px;
+            margin: 15px 0 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #263746;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #CBD5E1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        input:focus {
+            border-color: #0D9488;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.10);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 27px;
+            padding: 14px;
+            background: #0D9488;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: background 0.2s ease;
+        }
+
+        button:hover {
+            background: #0F766E;
+        }
+
+        .login-link {
+            margin-top: 23px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #0D9488;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #B91C1C;
+            background: #FEE2E2;
+            padding: 11px;
+            border-radius: 7px;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        @media(max-width: 480px) {
+            .register-box {
+                padding: 28px 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-box">
+
+        <div class="brand">BizVision</div>
+
+        <h1>Create Your Account</h1>
+
+        <p class="subtitle">
+            Join BizVision and manage your business efficiently.
+        </p>
+
+        <form method="POST" action="/register">
+
+            <label>Full Name</label>
+            <input type="text" name="full_name"
+                   placeholder="Enter your full name" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email"
+                   placeholder="Enter your email" required>
+
+            <label>Password</label>
+            <input type="password" name="password"
+                   placeholder="Create a password"
+                   minlength="8" required>
+
+            <button type="submit">Create Account</button>
+
+        </form>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <div class="login-link">
+            Already have an account?
+            <a href="/login">Login Here</a>
+        </div>
+
+    </div>
+
+</body>
+</html>
